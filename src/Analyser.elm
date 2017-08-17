@@ -286,8 +286,8 @@ finishProcess newStage cmds model =
     in
     ( newModel
     , Cmd.batch
-        [ AnalyserPorts.sendMessagesAsStrings newState.messages
-        , AnalyserPorts.sendMessagesAsJson newState.messages
+        [ AnalyserPorts.sendMessagesAsJson newState.messages
+        , AnalyserPorts.sendReport { messages = newState.messages }
         , AnalyserPorts.sendStateAsJson newState
         , Cmd.map SourceLoadingStageMsg cmds
         ]

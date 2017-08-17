@@ -2,6 +2,7 @@ module Analyser.Messages.Json exposing (decodeMessage, encodeMessage, serialiseM
 
 import Analyser.Messages.Range as Range exposing (Range)
 import Analyser.Messages.Types exposing (Message, MessageData(..), MessageStatus(..))
+import Analyser.Messages.Util
 import Elm.Syntax.Base as AST
 import Json.Decode as JD exposing (Decoder)
 import Json.Decode.Extra exposing ((|:))
@@ -81,9 +82,13 @@ decodeMessageStatus =
 
 decodeMessageFile : Decoder ( String, String )
 decodeMessageFile =
-    JD.succeed (,)
-        |: JD.field "sha1" JD.string
-        |: JD.field "path" JD.string
+    JD.string |> JD.map ((,) "")
+
+
+
+-- JD.succeed (,)
+--     |: JD.field "sha1" JD.string
+--     |: JD.field "path" JD.string
 
 
 decodeMessageData : Decoder MessageData
@@ -161,15 +166,16 @@ encodeMessage m =
     JE.object <|
         [ ( "id", JE.int m.id )
         , ( "status", encodeMessageStatus m.status )
+        , ( "message", JE.string <| Analyser.Messages.Util.asString m.data )
         , ( "files"
           , JE.list <|
-                List.map
-                    (\( s, p ) ->
-                        JE.object
-                            [ ( "path", JE.string p )
-                            , ( "sha1", JE.string s )
-                            ]
-                    )
+                List.map (Tuple.second >> JE.string)
+                    -- (\( s, p ) ->
+                    -- JE.object
+                    -- [ ( "path",  )
+                    -- , ( "sha1", JE.string s )
+                    -- ]
+                    -- )
                     m.files
           )
         ]

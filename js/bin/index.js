@@ -11,14 +11,18 @@ var args = minimist(process.argv.slice(2), {
         version: "v"
     },
     boolean: ["serve", "help", "version"],
-    string: ["port", "elm-format-path"]
+    string: ["port", "elm-format-path", "format"]
 });
 
 (function() {
     const elmFormatPath = args["elm-format-path"] || "elm-format";
+
+    const validFormats = ["json", "human"];
+
     const config = {
         port: args.port || 3000,
-        elmFormatPath: elmFormatPath
+        elmFormatPath: elmFormatPath,
+        format: validFormats.indexOf(args.format) != -1 ? args.format : "human"
     };
 
     if (args.help) {
@@ -41,6 +45,9 @@ var args = minimist(process.argv.slice(2), {
         );
         console.log(
             "   --elm-format-path   Path to elm-format. Defaults to `elm-format`."
+        );
+        console.log(
+            "   --output            Output format for CLI. Defaults to 'human'. Options 'human'|'json'"
         );
         process.exit(1);
     }
