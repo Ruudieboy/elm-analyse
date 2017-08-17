@@ -4,12 +4,11 @@ import Json.Decode as JD exposing (Decoder)
 import Json.Encode as JE exposing (Value)
 
 
-encodeTyped : String -> Value -> Value
+encodeTyped : String -> Value -> List ( String, Value )
 encodeTyped x v =
-    JE.object
-        [ ( "type", JE.string x )
-        , ( "value", v )
-        ]
+    [ ( "type", JE.string x )
+    , ( "value", v )
+    ]
 
 
 decodeTyped : List ( String, Decoder a ) -> Decoder a

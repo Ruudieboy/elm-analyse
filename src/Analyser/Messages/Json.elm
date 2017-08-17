@@ -158,7 +158,7 @@ serialiseMessage =
 
 encodeMessage : Message -> JE.Value
 encodeMessage m =
-    JE.object
+    JE.object <|
         [ ( "id", JE.int m.id )
         , ( "status", encodeMessageStatus m.status )
         , ( "files"
@@ -172,8 +172,8 @@ encodeMessage m =
                     )
                     m.files
           )
-        , ( "data", encodeMessageData m.data )
         ]
+            ++ encodeMessageData m.data
 
 
 encodeMessageStatus : MessageStatus -> JE.Value
@@ -193,7 +193,7 @@ encodeMessageStatus m =
                 "fixing"
 
 
-encodeMessageData : MessageData -> JE.Value
+encodeMessageData : MessageData -> List ( String, JE.Value )
 encodeMessageData m =
     case m of
         UnreadableSourceFile s ->
@@ -431,8 +431,9 @@ encodeMessageData m =
                     ]
 
         DuplicateRecordFieldUpdate fileName fieldName ranges ->
-            JE.object
-                [ ( "file", JE.string fileName )
-                , ( "fieldName", JE.string fieldName )
-                , ( "ranges", JE.list <| List.map Range.encode ranges )
-                ]
+            encodeTyped "DuplicateRecordFieldUpdate" <|
+                JE.object
+                    [ ( "file", JE.string fileName )
+                    , ( "fieldName", JE.string fieldName )
+                    , ( "ranges", JE.list <| List.map Range.encode ranges )
+                    ]
