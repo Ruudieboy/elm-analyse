@@ -8,7 +8,7 @@ encodeTyped : String -> Value -> Value
 encodeTyped x v =
     JE.object
         [ ( "type", JE.string x )
-        , ( x, v )
+        , ( "value", v )
         ]
 
 
@@ -21,7 +21,7 @@ decodeTyped opts =
                     (\t ->
                         case List.filter (Tuple.first >> (==) t) opts |> List.head of
                             Just m ->
-                                JD.field (Tuple.first m) <| Tuple.second m
+                                JD.field "value" <| Tuple.second m
 
                             Nothing ->
                                 JD.fail ("No decoder for type: " ++ t)
