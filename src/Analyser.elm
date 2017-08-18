@@ -8,10 +8,10 @@ import Analyser.FileWatch as FileWatch exposing (FileChange(Remove, Update))
 import Analyser.Files.Types exposing (LoadedSourceFile)
 import Analyser.Fixer as Fixer
 import Analyser.Messages.Util as Messages
+import Analyser.Modules
 import Analyser.SourceLoadingStage as SourceLoadingStage
 import Analyser.State as State exposing (State)
 import AnalyserPorts
-import GraphBuilder
 import Inspection
 import Platform exposing (programWithFlags)
 import Time
@@ -270,12 +270,12 @@ finishProcess newStage cmds model =
         messages =
             Inspection.run newCodeBase includedSources model.configuration
 
-        newGraph =
-            GraphBuilder.run newCodeBase (CodeBase.sourceFiles newCodeBase)
+        newModules =
+            Analyser.Modules.build newCodeBase (CodeBase.sourceFiles newCodeBase)
 
         newState =
             State.finishWithNewMessages messages model.state
-                |> State.updateGraph newGraph
+                |> State.updateModules newModules
 
         newModel =
             { model
@@ -287,7 +287,7 @@ finishProcess newStage cmds model =
     ( newModel
     , Cmd.batch
         [ AnalyserPorts.sendMessagesAsJson newState.messages
-        , AnalyserPorts.sendReport { messages = newState.messages }
+        , AnalyserPorts.sendReport { messages = newState.messages, modules = newState.modules }
         , AnalyserPorts.sendStateAsJson newState
         , Cmd.map SourceLoadingStageMsg cmds
         ]

@@ -54,7 +54,7 @@ decodeMessage =
         |: JD.field "id" JD.int
         |: JD.field "status" decodeMessageStatus
         |: JD.field "files" (JD.list decodeMessageFile)
-        |: JD.field "data" decodeMessageData
+        |: decodeMessageData
 
 
 decodeMessageStatus : Decoder MessageStatus
