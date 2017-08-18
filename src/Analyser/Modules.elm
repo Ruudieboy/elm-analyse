@@ -1,9 +1,10 @@
-module Analyser.Modules exposing (Modules, build, decode, empty, encode)
+module Analyser.Modules exposing (Modules, build, codec, empty)
 
 import Analyser.CodeBase exposing (CodeBase)
 import Analyser.FileContext as FileContext exposing (FileContext)
 import Analyser.Files.Types exposing (LoadedSourceFiles)
 import Elm.Syntax.Base exposing (ModuleName)
+import Json.Bidirectional as JB
 import Json.Decode as JD exposing (Decoder)
 import Json.Encode as JE exposing (Value)
 
@@ -44,18 +45,21 @@ edgesInFile file =
             []
 
 
-decode : Decoder Modules
-decode =
-    JD.map2 Modules
-        (JD.field "projectModules" (JD.list decodeModuleName))
-        (JD.field "dependencies" (JD.list decodeDependency))
+codec : JB.Coder Modules
+codec =
+    JB.object Modules
+        |> JB.withField "projectModules" .projectModules (JB.list moduleNameCoder)
+        |> JB.withField "dependencies" .dependencies (JB.list dependencyCoder)
 
 
-decodeDependency : Decoder ( ModuleName, ModuleName )
-decodeDependency =
-    JD.map2 (,)
-        (JD.index 0 decodeModuleName)
-        (JD.index 1 decodeModuleName)
+dependencyCoder : JB.Coder ( ModuleName, ModuleName )
+dependencyCoder =
+    JB.tuple ( moduleNameCoder, moduleNameCoder )
+
+
+moduleNameCoder : JB.Coder ModuleName
+moduleNameCoder =
+    JB.custom encodeModuleName decodeModuleName
 
 
 decodeModuleName : Decoder ModuleName
@@ -66,16 +70,3 @@ decodeModuleName =
 encodeModuleName : ModuleName -> Value
 encodeModuleName =
     String.join "." >> JE.string
-
-
-encodeDependency : ( ModuleName, ModuleName ) -> Value
-encodeDependency ( from, to ) =
-    JE.list [ encodeModuleName from, encodeModuleName to ]
-
-
-encode : Modules -> Value
-encode modules =
-    JE.object
-        [ ( "projectModules", JE.list <| List.map encodeModuleName modules.projectModules )
-        , ( "dependencies", JE.list <| List.map encodeDependency modules.dependencies )
-        ]

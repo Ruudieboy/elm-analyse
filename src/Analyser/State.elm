@@ -6,6 +6,7 @@ import Analyser.Messages.Json exposing (decodeMessage, encodeMessage)
 import Analyser.Messages.Types as Messages exposing (Message, MessageId, MessageStatus(Applicable))
 import Analyser.Messages.Util as Messages exposing (blockForShas, markFixing)
 import Analyser.Modules exposing (Modules)
+import Json.Bidirectional as JB
 import Json.Decode as JD exposing (Decoder)
 import Json.Decode.Extra exposing ((|:))
 import Json.Encode as JE exposing (Value)
@@ -146,7 +147,7 @@ decodeState =
         |: JD.field "idCount" JD.int
         |: JD.field "status" decodeStatus
         |: JD.field "queue" (JD.list JD.int)
-        |: JD.field "modules" Analyser.Modules.decode
+        |: JD.field "modules" (JB.decoder Analyser.Modules.codec)
 
 
 encodeState : State -> Value
@@ -156,7 +157,7 @@ encodeState state =
         , ( "idCount", JE.int state.idCount )
         , ( "status", encodeStatus state.status )
         , ( "queue", JE.list (List.map JE.int state.queue) )
-        , ( "modules", Analyser.Modules.encode state.modules )
+        , ( "modules", JB.encodeValue Analyser.Modules.codec state.modules )
         ]
 
 
