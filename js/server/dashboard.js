@@ -21,8 +21,7 @@ module.exports = function(app, elm, expressWs) {
         });
     });
 
-    elm.ports.sendState.subscribe(function(stateString) {
-        state = JSON.parse(stateString);
+    elm.ports.sendState.subscribe(function(state) {
         expressWs.getWss().clients.forEach(x => x.send(renderState()));
     });
 

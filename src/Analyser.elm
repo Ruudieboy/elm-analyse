@@ -226,7 +226,7 @@ handleNextStep (( model, cmds ) as input) =
 doSendState : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 doSendState ( model, cmds ) =
     ( model
-    , Cmd.batch [ cmds, AnalyserPorts.sendStateAsJson model.state ]
+    , Cmd.batch [ cmds, AnalyserPorts.sendStateValue model.state ]
     )
 
 
@@ -286,9 +286,8 @@ finishProcess newStage cmds model =
     in
     ( newModel
     , Cmd.batch
-        [ AnalyserPorts.sendMessagesAsJson newState.messages
-        , AnalyserPorts.sendReport { messages = newState.messages, modules = newState.modules }
-        , AnalyserPorts.sendStateAsJson newState
+        [ AnalyserPorts.sendReport { messages = newState.messages, modules = newState.modules }
+        , AnalyserPorts.sendStateValue newState
         , Cmd.map SourceLoadingStageMsg cmds
         ]
     )
