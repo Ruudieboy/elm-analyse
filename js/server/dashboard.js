@@ -7,6 +7,8 @@ module.exports = function(app, elm, expressWs) {
         modules: []
     };
 
+    var report = null;
+
     function renderState() {
         return JSON.stringify(state);
     }
@@ -22,6 +24,10 @@ module.exports = function(app, elm, expressWs) {
         });
     });
 
+    elm.ports.sendReportValue.subscribe(function(newReport) {
+        report = newReport;
+    });
+
     elm.ports.sendState.subscribe(function(newState) {
         state = newState;
         expressWs.getWss().clients.forEach(x => x.send(renderState()));
@@ -30,6 +36,9 @@ module.exports = function(app, elm, expressWs) {
     return {
         getState: function() {
             return state;
+        },
+        getReport: function() {
+            return report;
         }
     };
 };

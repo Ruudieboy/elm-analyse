@@ -15,6 +15,15 @@ var args = minimist(process.argv.slice(2), {
 });
 
 (function() {
+    const elmAnalyseVersion = require(path.join(
+        __dirname,
+        "../..",
+        "package.json"
+    )).version;
+    const info = {
+        version: elmAnalyseVersion
+    };
+
     const elmFormatPath = args["elm-format-path"] || "elm-format";
 
     const validFormats = ["json", "human"];
@@ -53,9 +62,7 @@ var args = minimist(process.argv.slice(2), {
     }
 
     if (args.version) {
-        console.log(
-            require(path.join(__dirname, "../..", "package.json")).version
-        );
+        console.log(elmAnalyseVersion);
         process.exit(0);
     }
 
@@ -80,9 +87,9 @@ var args = minimist(process.argv.slice(2), {
 
     if (args.serve) {
         var server = require("../server/app.js");
-        server(config);
+        server(config, info);
         return;
     }
     var analyser = require("../analyser.js");
-    analyser(config);
+    analyser(config, info);
 })();

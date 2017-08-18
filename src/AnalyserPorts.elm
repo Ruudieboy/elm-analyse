@@ -2,7 +2,7 @@ port module AnalyserPorts exposing (onFixMessage, onReset, sendReport, sendState
 
 import Analyser.Report as Report exposing (Report)
 import Analyser.State exposing (State, encodeState)
-import Json.Encode as JE exposing (Value)
+import Json.Encode exposing (Value)
 
 
 port sendReportValue : Value -> Cmd msg
