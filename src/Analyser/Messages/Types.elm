@@ -42,8 +42,7 @@ type MessageStatus
 
 
 type MessageData
-    = UnreadableSourceFile FileName
-    | UnusedVariable FileName String Range
+    = UnusedVariable FileName String Range
     | UnusedTopLevel FileName String Range
     | UnusedImportedVariable FileName String Range
     | UnusedPatternVariable FileName String Range

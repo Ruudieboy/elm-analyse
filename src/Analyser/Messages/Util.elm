@@ -150,13 +150,6 @@ getMessageInfo m =
             , True
             )
 
-        UnreadableSourceFile fileName ->
-            ( String.concat
-                [ "Could not parse source file: ", fileName ]
-            , []
-            , True
-            )
-
         UnnecessaryPortModule fileName ->
             ( String.concat
                 [ "File  `"

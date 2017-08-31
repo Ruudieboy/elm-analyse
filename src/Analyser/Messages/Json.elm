@@ -94,8 +94,7 @@ decodeMessageFile =
 decodeMessageData : Decoder MessageData
 decodeMessageData =
     decodeTyped
-        [ ( "UnreadableSourceFile", JD.string |> JD.map UnreadableSourceFile )
-        , ( "UnusedVariable", decodeFileVarNameAndRange UnusedVariable )
+        [ ( "UnusedVariable", decodeFileVarNameAndRange UnusedVariable )
         , ( "UnusedTopLevel", decodeFileVarNameAndRange UnusedTopLevel )
         , ( "UnusedImportedVariable", decodeFileVarNameAndRange UnusedImportedVariable )
         , ( "UnusedPatternVariable", decodeFileVarNameAndRange UnusedPatternVariable )
@@ -202,9 +201,6 @@ encodeMessageStatus m =
 encodeMessageData : MessageData -> List ( String, JE.Value )
 encodeMessageData m =
     case m of
-        UnreadableSourceFile s ->
-            encodeTyped "UnreadableSourceFile" (JE.string s)
-
         UnusedVariable file varName range ->
             encodeTyped "UnusedVariable" <|
                 JE.object
